@@ -19,8 +19,9 @@ class CluMicroCluster:
     :parameter update_timestamp is used to indicate the last update time of the cluster
     """
 
-    def __init__(self, nb_points = 0, identifier = 0, merge = 0, id_list = None, linear_sum = 0, squared_sum = 0, linear_time_sum = 0, squared_time_sum = 0,
-                  m = 100, update_timestamp = 0):
+    def __init__(self, nb_points = 0, identifier = 0, merge = 0, id_list = None, linear_sum = 0,
+                 squared_sum = 0, linear_time_sum = 0, squared_time_sum = 0,
+                 m = 100, update_timestamp = 0):
         self.nb_points = nb_points
         self.identifier = identifier
         self.merge = merge
@@ -32,6 +33,11 @@ class CluMicroCluster:
         self.m = m
         self.update_timestamp = update_timestamp
         #self.radius_factor = 1.8
+
+
+    def get_center(self, cluster):
+        center = [ self.linear_sum[i] / self.nb_points for i in range(len(self.linear_sum))]
+        return center
 
     def insert(self, x, current_timestamp):
         self.nb_points += 1
@@ -47,13 +53,10 @@ class CluMicroCluster:
         #for cluster in micro_clusters :
         return self
 
-
-
-
     def get_relevancestamp(self):
         if (self.nb_points < 2 * self.m):
             return self.get_mutime()
-        return self.get_mutime()
+        return self.get_mutime() + self.get_sigmatime() * self.get_quantile( self.m /(2 * self.nb_points))
 
     def get_mutime(self):
         return self.linear_time_sum / self.nb_points
